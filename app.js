@@ -4,17 +4,30 @@ require('dotenv/config')
 const postsRoute = require('./routes/posts');
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({
+  extended: true
+}));
+
 app.use('/posts', postsRoute);
+
 
 // ROUTES
 app.get('/', (req, res) => {
     res.send("we are on home");
 })
 
-//connect to db
-mongoose.connect(process.env.DB_CONNECTION, () => {
-    console.log("connected to db")
-});
+const connectionParams={
+  useNewUrlParser: true,
+  useUnifiedTopology: true 
+}
+mongoose.connect(process.env.DB_CONNECTION, connectionParams)
+  .then( () => {
+      console.log('Connected to database ')
+  })
+  .catch( (err) => {
+      console.error(`Error connecting to the database. \n${err}`);
+  })
 
 // how do we start listening
 app.listen(5000);
